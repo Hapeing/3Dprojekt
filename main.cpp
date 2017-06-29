@@ -8,6 +8,7 @@
 #include <DirectXMath.h>
 #include "Inc\SimpleMath.h"
 #include "bth_image.h"
+#include "Camera.h"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
@@ -39,6 +40,8 @@ ID3D11DepthStencilView* DSView = nullptr;
 ID3D11Texture2D* depthTexture = nullptr;
 
 float rotation = 0;
+
+Camera* camera;
 
 struct TriangleVertex
 {
@@ -83,6 +86,8 @@ struct VS_CONSTANT_BUFFER
 
 void CreateShaders()
 {
+	camera = new Camera();
+
 	//create vertex shader
 	ID3DBlob* pVS = nullptr;
 	D3DCompileFromFile(
@@ -285,32 +290,34 @@ void Render()
 	data.pSysMem = triangleVertices;
 	gDevice->CreateBuffer(&bufferDesc, &data, &gVertexBuffer);
 
-	rotation += 0.001;
+	//rotation += 0.001;
 
 	DirectX::XMMATRIX mWorld = DirectX::XMMatrixIdentity();
 	
-	DirectX::XMVECTOR cameraPos;
-	DirectX::XMVECTOR cameraLookAt;
-	DirectX::XMVECTOR cameraUp;
-	//setting cameraPos
-	cameraPos = DirectX::XMVectorSet(0, 0, -2, 1);
 
-	//setting lookAt vector
-	cameraLookAt = DirectX::XMVectorSet(0, 0, 0, 1);
 
-	//setting up vector
-	cameraUp = DirectX::XMVectorSet(0, 1, 0, 0);
+	//DirectX::XMVECTOR cameraPos;
+	//DirectX::XMVECTOR cameraLookAt;
+	//DirectX::XMVECTOR cameraUp;
+	////setting cameraPos
+	//cameraPos = DirectX::XMVectorSet(0, 0, -2, 1);
+
+	////setting lookAt vector
+	//cameraLookAt = DirectX::XMVectorSet(0, 0, 0, 1);
+
+	////setting up vector
+	//cameraUp = DirectX::XMVectorSet(0, 1, 0, 0);
 
 	//setting up view matrix
-	DirectX::XMMATRIX mView = DirectX::XMMatrixLookAtLH(cameraPos, cameraLookAt, cameraUp);
+	//DirectX::XMMATRIX mView = DirectX::XMMatrixLookAtLH(cameraPos, cameraLookAt, cameraUp);
 
 	//setting up projection matrix
 	DirectX::XMMATRIX mProjection = DirectX::XMMatrixPerspectiveFovLH(3.14f*0.45f, 640.0f / 480.0f, 0.1f, 20.0f);
 
 	//setting matrecies to the constant buffer
 	DirectX::XMStoreFloat4x4(&VsData.world, DirectX::XMMatrixTranspose(mWorld *  DirectX::XMMatrixRotationY(rotation)));
-	DirectX::XMStoreFloat4x4(&VsData.view, DirectX::XMMatrixTranspose(mView));
-	DirectX::XMStoreFloat4x4(&VsData.proj, DirectX::XMMatrixTranspose(mProjection));
+	DirectX::XMStoreFloat4x4(&VsData.view, DirectX::XMMatrixTranspose(camera->getView()));
+	DirectX::XMStoreFloat4x4(&VsData.proj, DirectX::XMMatrixTranspose(camera->getProjection()));
 	
 
 
