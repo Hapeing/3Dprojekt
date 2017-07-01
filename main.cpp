@@ -269,6 +269,10 @@ void SetViewport()
 
 void Render()
 {
+	DirectX::XMMATRIX mWorld = DirectX::XMMatrixIdentity();
+
+	camera->update(1.f, &mWorld);
+
 	gDeviceContext->OMSetRenderTargets(1, &gBackbufferRTV, DSView);
 
 
@@ -292,30 +296,10 @@ void Render()
 
 	//rotation += 0.001;
 
-	DirectX::XMMATRIX mWorld = DirectX::XMMatrixIdentity();
 	
 
-
-	//DirectX::XMVECTOR cameraPos;
-	//DirectX::XMVECTOR cameraLookAt;
-	//DirectX::XMVECTOR cameraUp;
-	////setting cameraPos
-	//cameraPos = DirectX::XMVectorSet(0, 0, -2, 1);
-
-	////setting lookAt vector
-	//cameraLookAt = DirectX::XMVectorSet(0, 0, 0, 1);
-
-	////setting up vector
-	//cameraUp = DirectX::XMVectorSet(0, 1, 0, 0);
-
-	//setting up view matrix
-	//DirectX::XMMATRIX mView = DirectX::XMMatrixLookAtLH(cameraPos, cameraLookAt, cameraUp);
-
-	//setting up projection matrix
-	DirectX::XMMATRIX mProjection = DirectX::XMMatrixPerspectiveFovLH(3.14f*0.45f, 640.0f / 480.0f, 0.1f, 20.0f);
-
 	//setting matrecies to the constant buffer
-	DirectX::XMStoreFloat4x4(&VsData.world, DirectX::XMMatrixTranspose(mWorld *  DirectX::XMMatrixRotationY(rotation)));
+	DirectX::XMStoreFloat4x4(&VsData.world, DirectX::XMMatrixTranspose(mWorld));
 	DirectX::XMStoreFloat4x4(&VsData.view, DirectX::XMMatrixTranspose(camera->getView()));
 	DirectX::XMStoreFloat4x4(&VsData.proj, DirectX::XMMatrixTranspose(camera->getProjection()));
 	
